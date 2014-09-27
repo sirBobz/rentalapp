@@ -36,6 +36,19 @@ AppAsset::register($this);
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
                     ['label' => 'Home', 'url' => ['/site/index']],
+                    ['label' => 'Payments',
+                        'items' => [
+                            [
+                                'label' => 'Upload', 'url' => ['payment/upload']
+                            ],
+                            [
+                                'label' => 'Simulate IPN form', 'url' => ['payment/simulate']
+                            ],
+                            [
+                                'label' => 'Pending actioning', 'url' => ['payment/listpendingassignment']
+                            ]
+                        ]
+                    ],
                     ['label' => 'Properties', 
                         'items' => [
                             [

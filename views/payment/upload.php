@@ -3,10 +3,13 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 ?>
 <div class="payment-upload">
-    <h1>Upload payment</h1>
+    <div class="page-header">
+        <h1>Upload payment</h1>
+    </div>
+    
     <?php $form = ActiveForm::begin([
         'id' => 'upload-form',
-        'options' => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
+        'options' => [/*'class' => 'form-horizontal',*/ 'enctype' => 'multipart/form-data'],
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-2 control-label'],

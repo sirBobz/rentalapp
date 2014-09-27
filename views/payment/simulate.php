@@ -7,19 +7,21 @@ use yii\widgets\ActiveForm;
  * @var yii\widgets\ActiveForm $form
  * @var app\models\SimulateForm $model
  */
-$this->title = 'Simulate incoming payment';
+$this->title = 'Simulate incoming IPN payment';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="payment-simulate">
-    <h1><?= Html::encode($this->title) ?></h1>
-
+    <div class="page-header">
+        <h1><?= Html::encode($this->title) ?></h1>
+    </div>
+    
     <?php $form = ActiveForm::begin([
         'id' => 'simulate-form',
-        'options' => ['class' => 'form-horizontal'],
-        'fieldConfig' => [
+        'options' => [/*'class' => 'form-horizontal'*/'style' => 'width:400px'],
+        /*'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-2 control-label'],
-        ],
+        ],*/
     ]); ?>
 
     <?= $form->field($model, 'amount') ?>
@@ -29,9 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'paidinby') ?>
 
     <div class="form-group">
-        <div class="col-lg-offset-2 col-lg-10">
-            <?= Html::submitButton('Go!', ['class' => 'btn btn-primary', 'name' => 'payment-simulate-button']) ?>
-        </div>
+        <?= Html::submitButton('Go!', ['class' => 'btn btn-primary', 'name' => 'payment-simulate-button']) ?>
+        
     </div>
 
     <?php ActiveForm::end(); ?>

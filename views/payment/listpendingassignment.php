@@ -6,11 +6,13 @@ $this->title = 'Payments pending actioning';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<h1><?= Html::encode($this->title) ?></h1>
+<div class="page-header">
+    <h1><?= Html::encode($this->title) ?></h1>
+</div>
+
 <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            'id',
             'receiptnumber',
             'amount',
             'paymentdate',
