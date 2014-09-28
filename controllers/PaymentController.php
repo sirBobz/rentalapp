@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use \Yii;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
 use app\models\Payment;
 use app\models\PaymentSimulateForm;
@@ -21,6 +22,26 @@ class PaymentController extends \yii\web\Controller
         $this->ipnService = $ipnSvc;
         $this->paymentProcessor = $paymentProcessor;
         parent::__construct($id, $module, $config);
+    }
+    
+    public function behaviors() {
+        return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ]
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
+        ];
     }
 
     /**

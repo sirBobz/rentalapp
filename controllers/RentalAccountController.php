@@ -2,9 +2,31 @@
 
 namespace app\controllers;
 
+use yii\filters\VerbFilter;
+
 class RentalAccountController extends \yii\web\Controller
 {
-    /**
+    public function behaviors() {
+        return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ]
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
+        ];
+    }
+
+        /**
      * @permission viewrentalaccount
      */
     public function actionIndex()

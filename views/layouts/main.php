@@ -72,7 +72,23 @@ AppAsset::register($this);
                     ['label' => 'Reports', 
                         'items' => [
                             [
-                                'label' => 'Late payments', 'url' => ['site/users']
+                                'label' => 'Late payment accounts', 'url' => ['site/users']
+                            ]
+                            ,
+                            [
+                                'label' => 'late payment accounts over months'
+                            ],
+                            [
+                                'label' => 'Unoccupied units', 'url' => ['site/users']
+                            ],
+                            [
+                                'label' => 'Property type uptake'
+                            ],
+                            [
+                                'label' => 'Concentrated locations'
+                            ],
+                            [
+                                'label' => 'Most upcoming locations'
                             ]
                         ]
                     ],
@@ -95,7 +111,7 @@ AppAsset::register($this);
             ]);
             NavBar::end();
         ?>
-
+<?= kartik\helpers\Html::csrfMetaTags() ?>
         <div class="container">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
