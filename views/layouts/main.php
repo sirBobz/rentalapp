@@ -72,7 +72,7 @@ AppAsset::register($this);
                     ['label' => 'Reports', 
                         'items' => [
                             [
-                                'label' => 'Late payment accounts', 'url' => ['site/users']
+                                'label' => 'Late payment accounts', 'url' => ['rental-account/late-payment-accounts']
                             ]
                             ,
                             [

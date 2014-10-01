@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use \Yii;
 use yii\filters\VerbFilter;
+
+use app\models\LatePaymentRentalLogSearch;
 
 class RentalAccountController extends \yii\web\Controller
 {
@@ -96,5 +99,16 @@ class RentalAccountController extends \yii\web\Controller
     public function actionSearch()
     {
         return $this->render('search');
+    }
+    
+    public function actionLatePaymentAccounts()
+    {
+        $searchModel = new LatePaymentRentalLogSearch;
+        $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
+        
+        return $this->render('late-payment-accounts', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel
+        ]);
     }
 }
