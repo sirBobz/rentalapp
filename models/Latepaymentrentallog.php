@@ -18,6 +18,8 @@ use Yii;
  */
 class Latepaymentrentallog extends \yii\db\ActiveRecord
 {
+    public $tenantname;
+    
     /**
      * @inheritdoc
      */

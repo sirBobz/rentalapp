@@ -15,8 +15,8 @@ class LatePaymentRentalLogSearch extends Latepaymentrentallog
     public function rules()
     {
         return [
-            [['amountcharged'], 'number'],
-            [['datecreated'], 'safe'],
+            //[['amountcharged'], 'number'],
+            //[['datecreated'], 'safe'],
         ];
     }
 
@@ -28,7 +28,10 @@ class LatePaymentRentalLogSearch extends Latepaymentrentallog
 
     public function search($params)
     {
-        $query = Latepaymentrentallog::find();
+        $query = Latepaymentrentallog::find()->select(['year', 'month', 'amountcharged', 
+            'latepaymentrentallog.datecreated', 'e.name as tenantname'])
+                ->innerJoin('rental r', 'rentalref = r.id')
+                ->innerJoin('entity e', 'r.tenantref = e.id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

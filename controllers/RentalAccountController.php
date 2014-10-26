@@ -105,10 +105,21 @@ class RentalAccountController extends \yii\web\Controller
     {
         $searchModel = new LatePaymentRentalLogSearch;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
+        $pieChartData = \Yii::$app->db->createCommand("SELECT e.name, COUNT(l.`id`) AS lateaccounts FROM `latepaymentrentallog` l
+            INNER JOIN `rental` r ON l.`rentalref` = r.`id`
+            INNER JOIN `unit` u ON r.`unitref` = u.`id`
+            INNER JOIN `property` p ON u.`propertyref` = p.`id`
+            INNER JOIN `entity` e ON p.`propertyownerref` = e.`id`
+            WHERE l.`year` = YEAR( current_date( ) )
+            AND l.`month` = MONTH( current_date( ) ) 
+            GROUP BY e.`id`
+            ORDER BY lateaccounts DESC
+            LIMIT 0, 5")->queryAll();
         
         return $this->render('late-payment-accounts', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel
+            'searchModel' => $searchModel,
+            'pieChartData' => $pieChartData
         ]);
     }
 }

@@ -99,15 +99,12 @@ class Payment extends \yii\db\ActiveRecord
         $this->trigger(self::EVENT_PAYMENT_COMPOSED, $event);
     }
     
-    public function beforeSave($insert) {
-        if(parent::beforeSave($insert))
+    public function beforeValidate() {
+        if(parent::beforeValidate())
         {
-            if($this->isNewRecord)
-            {
-                $this->datecreated = date('Y-m-d H:i:s');
-                $this->paymentstatus = self::STATUS_PAYMENT_PENDING_ASSIGNMENT;
-            }
-            
+            $this->datecreated = date('Y-m-d H:i:s');
+            $this->paymentstatus = self::STATUS_PAYMENT_PENDING_ASSIGNMENT;
+                
             return TRUE;
         }
     }

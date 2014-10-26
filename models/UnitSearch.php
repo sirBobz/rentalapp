@@ -30,8 +30,9 @@ class UnitSearch extends Unit
     public function search($params)
     {
         $query = Unit::find()->select(['unit.id', 'unit.name', 'unit.isavailable', 'unit.description', 
-            'p.name as propertyname'])
-                ->innerJoin('property p', 'unit.propertyref = p.id');
+            'p.name as propertyname', 'e.name as propertyowner'])
+                ->innerJoin('property p', 'unit.propertyref = p.id')
+                ->innerJoin('entity e', 'p.propertyownerref = e.id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -48,9 +49,7 @@ class UnitSearch extends Unit
         ]);
         
         $query->andFilterWhere(['like', 'unit.name', $this->name]);
-        //print_r($query->all());
-        //die();
-
+        
         return $dataProvider;
     }
 }

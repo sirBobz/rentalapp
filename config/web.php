@@ -21,7 +21,7 @@ $config = [
             'class' => 'app\components\Qp'
         ],*/
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => 'yii\caching\XCache',
         ],
         'user' => [
             'identityClass' => 'app\models\Login',

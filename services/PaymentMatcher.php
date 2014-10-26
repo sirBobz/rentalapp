@@ -13,10 +13,11 @@ class PaymentMatcher implements IMatchPayment
             'rental.billingstartdate'])->
         innerJoin('entity e', 'rental.tenantref = e.id')->
                 where(['datedestroyed' => null]);
-        
+                
         if(!empty($accountNumber))
         {
             $exactMatch = $rentalMatch->where(['rental.accountnumber' => $accountNumber])->one();
+            
             //exact match found
             if($exactMatch != NULL)
                 return $exactMatch;

@@ -19,7 +19,8 @@ use Yii;
 class Unit extends \yii\db\ActiveRecord
 {
     public $propertyname;
-    
+    public $propertyowner;
+
     /**
      * @inheritdoc
      */

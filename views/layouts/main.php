@@ -25,6 +25,40 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php
+        $keyname = "roles.actions";
+        $cache = Yii::$app->cache;
+        
+        $exists = $cache->exists($keyname);
+        if(!$exists)
+        {
+            $allRolesAndRespectiveActions = Yii::$app->db->createCommand("SELECT `parent`, `child` FROM `auth_item_child`")
+                ->queryAll();
+            $encoded = json_encode($allRolesAndRespectiveActions);
+            
+            $cache->add($keyname, $encoded, 0);
+        }
+        $encodedRolesActions = $cache->get($keyname);
+        $decodedRolesActionsArray = json_decode($encodedRolesActions);
+        $userRoles = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
+        $rolesForUser = [];
+        foreach ($userRoles as $key => $value) {
+          $rolesForUser[] = $key;
+        }
+        
+        $actionsForUser = [];
+        foreach ($decodedRolesActionsArray as $roleAction)
+        {
+            $roleAction->parent;
+            $exists = in_array($roleAction->parent, $rolesForUser);
+            
+            if($exists)
+                $actionsForUser[] = $roleAction->child;
+            
+        }
+        //$allowable = in_array('uploadpayment', $actionsForUser);
+        //var_dump(Yii::$app->user->id);
+        //die();
+        
             NavBar::begin([
                 'brandLabel' => 'Rental App',
                 'brandUrl' => Yii::$app->homeUrl,
@@ -35,70 +69,75 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => 'Home', 'url' => ['/site/index']],
+                    ['label' => 'Home', 'url' => ['/site/index'], 'visible' => true],
                     ['label' => 'Payments',
+                        'visible' => (Yii::$app->user->id == NULL)? false: true,
                         'items' => [
                             [
-                                'label' => 'Upload', 'url' => ['payment/upload']
+                                'label' => 'Upload', 'url' => ['payment/upload'], 'visible' => in_array('uploadpayment', $actionsForUser)
                             ],
                             [
-                                'label' => 'Simulate IPN form', 'url' => ['payment/simulate']
+                                'label' => 'Simulate IPN form', 'url' => ['payment/simulate'], 'visible' => in_array('simulatepayment', $actionsForUser)
                             ],
                             [
-                                'label' => 'Pending actioning', 'url' => ['payment/listpendingassignment']
+                                'label' => 'Pending actioning', 'url' => ['payment/listpendingassignment'], 'visible' => in_array('paymentforactioning', $actionsForUser)
                             ]
                         ]
                     ],
                     ['label' => 'Properties', 
+                        'visible' => (Yii::$app->user->id == NULL)? false: true,
                         'items' => [
                             [
-                                'label' => 'Property owners', 'url' => ['property-owner/index']
+                                'label' => 'Property owners', 'url' => ['property-owner/index'], 'visible' => in_array('viewpropertyowner', $actionsForUser)
                             ],
                             [
-                                'label' => 'Rental Accounts', 'url' => ['rental-account/index']
+                                'label' => 'Rental Accounts', 'url' => ['rental-account/index'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ]
                         ]
                     ],
                     ['label' => 'People',
+                        'visible' => (Yii::$app->user->id == NULL)? false: true,
                         'items' => [
                             [
-                                'label' => 'Tenants', 'url' => ['tenant/index']
+                                'label' => 'Tenants', 'url' => ['tenant/index'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ],
                             [
-                                'label' => 'System users', 'url' => ['rbac/index']
+                                'label' => 'System users', 'url' => ['rbac/index'], 'visible' => in_array('viewusers', $actionsForUser)
                             ]
                         ]
                     ],
                     ['label' => 'Reports', 
+                        'visible' => (Yii::$app->user->id == NULL)? false: true,
                         'items' => [
                             [
-                                'label' => 'Late payment accounts', 'url' => ['rental-account/late-payment-accounts']
+                                'label' => 'Late payment accounts', 'url' => ['rental-account/late-payment-accounts'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ]
                             ,
-                            [
+                            /*[
                                 'label' => 'late payment accounts over months'
+                            ],*/
+                            [
+                                'label' => 'Unoccupied units', 'url' => ['unit/unoccupied', 'UnitSearch[isavailable]' => 1], 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ],
                             [
-                                'label' => 'Unoccupied units', 'url' => ['site/users']
+                                'label' => 'Property type uptake', 'url' => ['unit/uptake'], 'visible' => in_array('viewunit', $actionsForUser)
                             ],
                             [
-                                'label' => 'Property type uptake'
+                                'label' => 'Concentrated locations', 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ],
                             [
-                                'label' => 'Concentrated locations'
-                            ],
-                            [
-                                'label' => 'Most upcoming locations'
+                                'label' => 'Most upcoming locations', 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ]
                         ]
                     ],
                     ['label' => 'System',
+                        'visible' => (Yii::$app->user->id == NULL)? false: true,
                         'items' => [
                             [
-                                'label' => 'System roles', 'url' => ['rbac/roles']
+                                'label' => 'System roles', 'url' => ['rbac/roles'], 'visible' => in_array('viewrole', $actionsForUser)
                             ],
                             [
-                                'label' => 'System permissions', 'url' => ['rbac/permissions']
+                                'label' => 'System permissions', 'url' => ['rbac/permissions'], 'visible' => in_array('viewroleperms', $actionsForUser)
                             ]
                         ]
                     ],

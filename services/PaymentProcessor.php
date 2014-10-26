@@ -17,7 +17,8 @@ class PaymentProcessor implements IProcessPayment
         //exact match, therefore assign
         if ($numMatches == 1)
         {
-            $exactMatch = $matchResults[0];
+            $exactMatch = $matchResults;
+            
             $rental = \app\models\Rental::findOne($exactMatch['id']);
             $assignment = $rental->creditOnPaymentReceived($payment['amount'], $payment['id']);
             

@@ -166,9 +166,16 @@ class PaymentController extends \yii\web\Controller
                 }
                 if(!$skipRow && (substr($data[0], 0, 7) != "Receipt"))
                 {
-                    $payment = new \app\models\Payment($data[5], NULL, substr($data[9], 12, strlen($data[9])), $data[1], 
-                            substr($data[9], 0, 10), $data[10], $data[0]);
-                    $payment->save();
+                    $payment = new Payment();
+                    $payment->amount = floatval($data[5]);
+                    $payment->ipnid = NULL;
+                    $payment->paidinby = substr($data[9], 12, strlen($data[9]));
+                    $payment->paymentdate = $data[1];
+                    $payment->paymentphonenumber = substr($data[9], 0, 10);
+                    $payment->paymentreference = $data[10];
+                    $payment->receiptnumber = $data[0];
+                    
+                    $res = $payment->insert();
                     
                     $payment->on(\app\models\Payment::EVENT_PAYMENT_COMPOSED, [$obj, 'processEvent']);
                     $payment->notifyUponCreation();
@@ -176,7 +183,7 @@ class PaymentController extends \yii\web\Controller
             }
             fclose($handle);
             
-            echo "payment uploaded successfully";
+            return $this->redirect(['uploadresult', 'id' => $model->id]);
         }
         
         return $this->render('upload', ['model' => $model]);

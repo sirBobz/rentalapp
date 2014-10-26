@@ -17,10 +17,19 @@ class IpnPaymentReceiver extends \yii\base\Object implements IReceiveIpnPayment
         if(!is_numeric($ipnData['ipnid']))
             return NULL;
         
-        $payment = new Payment($ipnData['amount'], isset($ipnData['ipnid']) ? $ipnData['ipnid'] : null, 
+        /*$payment = new Payment($ipnData['amount'], isset($ipnData['ipnid']) ? $ipnData['ipnid'] : null, 
                 $ipnData['paidinby'], $ipnData['paymentdate'], $ipnData['paymentphone'], 
                 isset($ipnData['paymentreference']) ? $ipnData['paymentreference'] : null, 
-                $ipnData['receiptnumber']);
+                $ipnData['receiptnumber']);*/
+        $payment = new Payment;
+        $payment->amount = $ipnData['amount'];
+        $payment->ipnid = isset($ipnData['ipnid']) ? $ipnData['ipnid'] : null;
+        $payment->paidinby = $ipnData['paidinby'];
+        $payment->paymentdate = $ipnData['paymentdate'];
+        $payment->paymentphonenumber = $ipnData['paymentphone'];
+        $payment->paymentreference = isset($ipnData['paymentreference']) ? $ipnData['paymentreference'] : null;
+        $payment->receiptnumber = $ipnData['receiptnumber'];
+        
         $payment->save();
         
         return($payment);

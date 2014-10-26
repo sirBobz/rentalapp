@@ -218,4 +218,38 @@ class UnitController extends Controller
             'model' => $model
         ]);
     }
+    
+    public function actionUnoccupied()
+    {
+        $searchModel = new UnitSearch();
+        $params = Yii::$app->request->queryParams;
+        $dataProvider = $searchModel->search($params);
+        
+        //pie data, unoccupied per propertyowner
+        
+        return $this->render('unoccupied', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    public function actionUptake()
+    {
+        $uptakePerGenre = \Yii::$app->db->createCommand("SELECT p.`genre`, count(u.`id`) AS unitsrented FROM `unit` u
+	INNER JOIN `property` p ON u.`propertyref` = p.`id`
+            INNER JOIN `entity` e ON p.`propertyownerref` = e.`id`
+            WHERE u.`isavailable` = 0
+            GROUP BY p.`genre`")->queryAll();
+        
+        $uptakePerType = \Yii::$app->db->createCommand("SELECT p.`type`, count(u.`id`) AS unitsrented FROM `unit` u
+	INNER JOIN `property` p ON u.`propertyref` = p.`id`
+            INNER JOIN `entity` e ON p.`propertyownerref` = e.`id`
+            WHERE u.`isavailable` = 0
+            GROUP BY p.`type`")->queryAll();
+        
+        return $this->render('uptake', [
+            'uptakePerGenre' => $uptakePerGenre,
+            'uptakePerType' => $uptakePerType
+        ]);
+    }
 }

@@ -1,6 +1,9 @@
 <?php
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
+
+$desc = "Upload Payment";
+$this->title = $desc;
 ?>
 <div class="payment-upload">
     <div class="page-header">
