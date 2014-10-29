@@ -15,6 +15,13 @@ use yii\filters\VerbFilter;
  */
 class UnitController extends Controller
 {
+    private $rc;
+    
+    public function __construct($id, $module, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
+        parent::__construct($id, $module, $config);
+    }
+    
     public function behaviors()
     {
         return [
@@ -41,6 +48,14 @@ class UnitController extends Controller
      */
     public function actionIndex($propertyid)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new UnitSearch();
         $params = Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($params);
@@ -61,6 +76,14 @@ class UnitController extends Controller
      */
     public function actionView($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -71,6 +94,14 @@ class UnitController extends Controller
      */
     public function actionCreate($propertyid)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new UnitForm;
         $model->propertyid = $propertyid;
 
@@ -119,6 +150,14 @@ class UnitController extends Controller
      */
     public function actionUpdate($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -161,6 +200,14 @@ class UnitController extends Controller
      */
     public function actionAssign()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $unitid = Yii::$app->request->queryParams['unitid'];
         $unit = Unit::find()->where(['id' => $unitid, 'isavailable' => TRUE])->with('property')->one();
         
@@ -204,6 +251,14 @@ class UnitController extends Controller
     
     public function actionRental($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = \app\models\Rental::find()->select(['rental.datecreated', 'rental.rentalperiod', 
             'rental.amountperperiod', 'rental.depositamount', 'rental.currentbalance', 'rental.depositrentalperiodpaidfor',
             'rental.lastpaymentdate', 'rental.latepaymentcharge', 'rental.accountnumber', 'u.name as unitname', 
@@ -221,6 +276,14 @@ class UnitController extends Controller
     
     public function actionUnoccupied()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new UnitSearch();
         $params = Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($params);
@@ -235,6 +298,14 @@ class UnitController extends Controller
     
     public function actionUptake()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $uptakePerGenre = \Yii::$app->db->createCommand("SELECT p.`genre`, count(u.`id`) AS unitsrented FROM `unit` u
 	INNER JOIN `property` p ON u.`propertyref` = p.`id`
             INNER JOIN `entity` e ON p.`propertyownerref` = e.`id`

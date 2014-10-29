@@ -9,6 +9,13 @@ use app\models\LatePaymentRentalLogSearch;
 
 class RentalAccountController extends \yii\web\Controller
 {
+    private $rc;
+    
+    public function __construct($id, $module, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
+        parent::__construct($id, $module, $config);
+    }
+
     public function behaviors() {
         return [
             'access' => [
@@ -29,11 +36,19 @@ class RentalAccountController extends \yii\web\Controller
         ];
     }
 
-        /**
+    /**
      * @permission viewrentalaccount
      */
     public function actionIndex()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new \app\models\RentalAccountSearch();
         $params = \Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($params);
@@ -54,6 +69,14 @@ class RentalAccountController extends \yii\web\Controller
      */
     public function actionView($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $rental = \app\models\Rental::find()
                 ->select(['rental.id', 'rental.accountnumber', 'rental.datecreated', 'rental.rentalperiod', 
                     'rental.amountperperiod', 'rental.depositamount', 'rental.currentbalance', 
@@ -79,6 +102,14 @@ class RentalAccountController extends \yii\web\Controller
      */
     public function actionTransactionhistory($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $query = (new \yii\db\Query())
                 ->from('transactionhistory')
                 ->where(['rentalref' => $id])
@@ -98,11 +129,27 @@ class RentalAccountController extends \yii\web\Controller
      */
     public function actionSearch()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         return $this->render('search');
     }
     
     public function actionLatePaymentAccounts()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new LatePaymentRentalLogSearch;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
         $pieChartData = \Yii::$app->db->createCommand("SELECT e.name, COUNT(l.`id`) AS lateaccounts FROM `latepaymentrentallog` l

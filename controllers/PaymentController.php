@@ -16,9 +16,11 @@ class PaymentController extends \yii\web\Controller
 {
     protected $ipnService;
     protected $paymentProcessor;
+    private $rc;
 
     public function __construct($id, $module, IReceiveIpnPayment $ipnSvc, 
             IProcessPayment $paymentProcessor, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
         $this->ipnService = $ipnSvc;
         $this->paymentProcessor = $paymentProcessor;
         parent::__construct($id, $module, $config);
@@ -49,6 +51,14 @@ class PaymentController extends \yii\web\Controller
      */
     public function actionAssign($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $payment = Payment::findOne(['id' => $id, 
             'paymentstatus' => Payment::STATUS_PAYMENT_PENDING_ASSIGNMENT]);
         $tenants = \app\models\Tenant::find()->where(['entitytype' => 'Tenant'])->
@@ -77,6 +87,14 @@ class PaymentController extends \yii\web\Controller
      */
     public function actionIndex()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         return $this->render('index');
     }
 
@@ -85,6 +103,14 @@ class PaymentController extends \yii\web\Controller
      */
     public function actionReverse($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $payment = Payment::findOne(['id' => $id, 
             'paymentstatus' => Payment::STATUS_PAYMENT_PENDING_ASSIGNMENT]);
         
@@ -110,6 +136,14 @@ class PaymentController extends \yii\web\Controller
      */
     public function actionSimulate()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new PaymentSimulateForm();
         $model->receiptnumber = uniqid();
         $model->paymentdate = date('Y-m-d H:i:s');
@@ -141,6 +175,14 @@ class PaymentController extends \yii\web\Controller
      */
     public function actionUpload()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new \app\models\PaymentUploadForm;
         if($model->load(Yii::$app->request->post()))
         {
@@ -148,6 +190,8 @@ class PaymentController extends \yii\web\Controller
             $path = Yii::$app->basePath . '/uploads/'. time() . "_" . $model->file->baseName . "." . 
                     $model->file->extension;
             $model->file->saveAs($path, TRUE);
+            
+            //create payment file upload object
             
             $obj = new PaymentReceivedConsumer($this->paymentProcessor);
             $skipRow = TRUE;
@@ -183,17 +227,41 @@ class PaymentController extends \yii\web\Controller
             }
             fclose($handle);
             
-            return $this->redirect(['uploadresult', 'id' => $model->id]);
+            return $this->redirect(['upload-result'/*, 'id' => $model->id*/]);
         }
         
         return $this->render('upload', ['model' => $model]);
     }
     
     /**
+     * @permission uploadpayment
+     */
+    public function actionUploadResult()
+    {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
+        return $this->render('upload-result');
+    }
+
+    /**
      * @permission paymentforactioning
      */
     public function actionListpendingassignment()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $query = \app\models\Payment::find();
         $query->andFilterWhere(['paymentstatus' => 1]);
         $dataProvider = new \yii\data\ActiveDataProvider([

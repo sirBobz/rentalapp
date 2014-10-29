@@ -14,6 +14,13 @@ use yii\filters\VerbFilter;
  */
 class PropertyOwnerController extends Controller
 {
+    private $rc;
+    
+    public function __construct($id, $module, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
+        parent::__construct($id, $module, $config);
+    }
+
     public function behaviors()
     {
         return [
@@ -40,6 +47,14 @@ class PropertyOwnerController extends Controller
     */
     public function actionIndex()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new PropertyOwnerSearch;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
 
@@ -54,6 +69,14 @@ class PropertyOwnerController extends Controller
      */
     public function actionView($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -64,6 +87,14 @@ class PropertyOwnerController extends Controller
      */
     public function actionCreate()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new PropertyOwner;
         $model->data = new \app\models\PropertyOwnerData;
 
@@ -90,6 +121,14 @@ class PropertyOwnerController extends Controller
      */
     public function actionUpdate($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

@@ -88,7 +88,7 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     
     public static function findByEmail($email)
     {
-        return static::findOne(["emailaddress" => $email]);
+        return static::findOne(["emailaddress" => $email, "status" => static::STATUS_ACTIVE]);
     }
 
     public function verifyPassword($password)
@@ -108,12 +108,14 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return $this->auth_key === $authKey;
     }
     
-    public function beforeSave($insert) {
-        $this->password = \yii\helpers\Security::generatePasswordHash($this->newPassword);
+    public function beforeValidate() {
+        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->emailaddress);
         $this->datecreated = date('Y-m-d H:i:s');
-        $this->status = static::STATUS_ACTIVE;
+        $this->status = static::STATUS_INACTIVE;
+        $this->createdbyref = Yii::$app->user->identity->entityref;
         
-        return parent::beforeSave($insert);
+        if(parent::beforeValidate())
+            return TRUE;
     }
     
     public static function loginStatusDropDown()

@@ -10,6 +10,13 @@ use app\components\MultidimensionArraySearchHelper;
 
 class RbacController extends \yii\web\Controller
 {
+    private $rc;
+    
+    public function __construct($id, $module, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
+        parent::__construct($id, $module, $config);
+    }
+
     public function behaviors() {
         return [
             'access' => [
@@ -35,6 +42,14 @@ class RbacController extends \yii\web\Controller
      */
     public function actionIndex()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new \app\models\UserSearch;
         $params = Yii::$app->request->getQueryParams();
         $dataProvider = $searchModel->search($params);
@@ -50,6 +65,14 @@ class RbacController extends \yii\web\Controller
      */
     public function actionRoles()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $auth = Yii::$app->authManager;
         $dataProvider = new \yii\data\ArrayDataProvider([
             'allModels' => $auth->getRoles()
@@ -65,6 +88,14 @@ class RbacController extends \yii\web\Controller
      */
     public function actionAddRole()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new \app\models\RoleForm;
           
         if($model->load(\Yii::$app->request->post()))
@@ -91,15 +122,13 @@ class RbacController extends \yii\web\Controller
      */
     public function actionRolePermissions($role)
     {
-        $rc = new \ReflectionClass(get_class());
-        $perm = $rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
         $perm = preg_replace('/\W/', "", $perm);
         $perm = substr($perm, 10);
         
-        /*$can = Yii::$app->user->can($perm);
+        $can = Yii::$app->user->can($perm);
         if(!$can)
             throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
-        */
         
         $auth = \Yii::$app->authManager;
         $model = $auth->getRole($role);
@@ -133,6 +162,14 @@ class RbacController extends \yii\web\Controller
      */
     public function actionPermissions()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $controllers = Yii::$app->metaInfo->getAll();
         
         /*$role = $auth->getRole('admin');
@@ -179,6 +216,14 @@ class RbacController extends \yii\web\Controller
      */
     public function actionRoleToUser($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $auth = \Yii::$app->authManager;
         $model = Login::find()
                 ->select(['login.emailaddress', 'login.status', 'e.name', 'login.datecreated', 

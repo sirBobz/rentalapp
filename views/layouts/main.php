@@ -35,7 +35,8 @@ AppAsset::register($this);
                 ->queryAll();
             $encoded = json_encode($allRolesAndRespectiveActions);
             
-            $cache->add($keyname, $encoded, 0);
+            //expire in 5 mins
+            $cache->add($keyname, $encoded, 300);
         }
         $encodedRolesActions = $cache->get($keyname);
         $decodedRolesActionsArray = json_decode($encodedRolesActions);

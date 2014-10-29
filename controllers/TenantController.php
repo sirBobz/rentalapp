@@ -14,6 +14,13 @@ use yii\filters\VerbFilter;
  */
 class TenantController extends Controller
 {
+    private $rc;
+    
+    public function __construct($id, $module, $config = array()) {
+        $this->rc = new \ReflectionClass(get_class());
+        parent::__construct($id, $module, $config);
+    }
+
     public function behaviors()
     {
         return [
@@ -40,6 +47,14 @@ class TenantController extends Controller
      */
     public function actionIndex()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $searchModel = new TenantSearch;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
 
@@ -54,6 +69,14 @@ class TenantController extends Controller
      */
     public function actionView($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -64,15 +87,29 @@ class TenantController extends Controller
      */
     public function actionCreate()
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = new Tenant;
         $model->data = new \app\models\TenantData;
-
+        
         if ($model->load(Yii::$app->request->post())) {
             if($model->save())
             {
                 $model->data->entityref = $model->id;
                 if($model->data->save())
                 {
+                    //create a login for the tenant
+                    $tenantLogin = new \app\models\Login;
+                    $tenantLogin->entityref = $model->id;
+                    $tenantLogin->emailaddress = $model->emailaddress;
+                    $tenantLogin->insert();
+                    
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
@@ -88,6 +125,14 @@ class TenantController extends Controller
      */
     public function actionListrentals($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $rentals = \app\models\Rental::find()->where(['tenantref' => $id])
                 ->select(['id', 'accountnumber'])
                 ->all();
@@ -101,6 +146,14 @@ class TenantController extends Controller
      */
     public function actionUpdate($id)
     {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
