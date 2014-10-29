@@ -8,6 +8,11 @@ $config = [
     'bootstrap' => ['log'],
     'extensions' => require(__DIR__ . '/../vendor/yiisoft/extensions.php'),
     'components' => [
+        'request' => [
+            'enableCookieValidation' => TRUE,
+            'enableCsrfValidation' => TRUE,
+            'cookieValidationKey' => 'deirewoe80w870defkljpsiqad;saipu23o43efjd'
+        ],
         'urlManager' => [
           'enablePrettyUrl' => TRUE
         ],
@@ -30,12 +35,16 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'mail' => [
+        'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
+            'useFileTransport' => FALSE,
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
-                'host' => 'localhost',
-                
+                'host' => 'smtp.gmail.com',
+                'username' => 'daniel@lukoba.com',
+                'password' => '43ffstop',
+                'port' => '587',
+                'encryption' => 'tls'
             ]
         ],
         'log' => [
