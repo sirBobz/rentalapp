@@ -32,7 +32,11 @@ $config = [
         ],
         'mail' => [
             'class' => 'yii\swiftmailer\Mailer',
-            'useFileTransport' => true,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'localhost',
+                
+            ]
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
