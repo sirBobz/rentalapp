@@ -115,10 +115,10 @@ class TenantController extends Controller
                             'emailaddress' => $model->emailaddress,
                             'id' => \Yii::$app->getSecurity()->generatePasswordHash($tenantLogin->id)
                         ])
-                    ->setTo('dlukoba@yahoo.com')
+                    ->setTo($tenantLogin->emailaddress)
                     ->setFrom('daniel@lukoba.com')
                     ->setSubject("Please verify your email '$tenantLogin->emailaddress'")
-                    ->send(); 
+                    ->send();
 
                     return $this->redirect(['view', 'id' => $model->id]);
                 }

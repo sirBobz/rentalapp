@@ -30,11 +30,19 @@ class PasswordResetForm extends Model
     {
         //confirm email exists
         $exists = $this->emailExists($this->emailaddress);
-        var_dump($exists);
-        \Yii::$app->session->setFlash('error', 'Can\'t find that email. Sorry');
-        //die();
+        if(!$exists)
+            \Yii::$app->session->setFlash('error', 'Can\'t find that email. Sorry');
         
         //send reset link to requestor's
+        Yii::$app->mailer->compose('site/requestPasswordReset', 
+            [
+                'emailaddress' => $model->emailaddress,
+                'id' => \Yii::$app->getSecurity()->generatePasswordHash($tenantLogin->id)
+            ])
+        ->setTo($this->emailaddress)
+        ->setFrom('daniel@lukoba.com')
+        ->setSubject("Reset your password for '$tenantLogin->emailaddress'")
+        ->send();
     }
     
     private function emailExists($email)

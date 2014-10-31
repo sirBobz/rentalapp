@@ -44,6 +44,7 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             [['entityref', 'createdbyref', 'status'], 'integer'],
             [['datecreated'], 'safe'],
             [['emailaddress'], 'string', 'max' => 45],
+            [['emailaddress'], 'email'],
             [['password'], 'string', 'max' => 128],
             [['emailaddress'], 'unique'],
             [['emailaddress'], 'filter', 'filter' => 'trim'],
