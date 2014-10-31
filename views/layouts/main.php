@@ -21,20 +21,6 @@ AppAsset::register($this);
     <?php $this->head() ?>
 </head>
 <body>
-<?php 
-$ret = Yii::$app->mailer->compose()
-        ->setTo('dlukoba@yahoo.com')
-        ->setFrom('daniel@lukoba.com')
-        ->setSubject('sample')
-        ->setTextBody('body')
-        ->send(); 
-
-$m = Yii::$app->mailer;
-var_dump($ret);
-die();
-
-?>
-
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php

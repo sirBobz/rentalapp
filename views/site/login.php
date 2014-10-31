@@ -25,7 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'username')->textInput() ?>
 
     <?= $form->field($model, 'password')->passwordInput() ?>
-
+    
+    <div class="form-group">
+        <?= Html::a('I forgot my password', ['password-reset']) ?>
+    </div>
     
     <div class="form-group">
         

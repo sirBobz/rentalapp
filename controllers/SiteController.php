@@ -74,6 +74,25 @@ class SiteController extends Controller
             ]);
         }
     }
+    
+    public function actionPasswordReset()
+    {
+        //user already logged in, go to the home page
+        if (!\Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new \app\models\PasswordResetForm();
+        
+        if ($model->load(Yii::$app->request->post()))
+        {
+            $model->reset();
+        }
+        
+        return $this->render('password-reset', [
+            'model' => $model
+        ]);
+    }
 
     public function actionLogout()
     {

@@ -110,6 +110,16 @@ class TenantController extends Controller
                     $tenantLogin->emailaddress = $model->emailaddress;
                     $tenantLogin->insert();
                     
+                    Yii::$app->mailer->compose('tenant/confirmEmailAddress', 
+                        [
+                            'emailaddress' => $model->emailaddress,
+                            'id' => \Yii::$app->getSecurity()->generatePasswordHash($tenantLogin->id)
+                        ])
+                    ->setTo('dlukoba@yahoo.com')
+                    ->setFrom('daniel@lukoba.com')
+                    ->setSubject("Please verify your email '$tenantLogin->emailaddress'")
+                    ->send(); 
+
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
