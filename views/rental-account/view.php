@@ -17,7 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-sm-2">
         <?= $model->currentbalance ?>
     </div>
-    
+    <div class="col-sm-offset-10">
+        <?= Html::a('Close Account', ['rental-account/close', 'id' => $model->id], ['id' => 'closeAccount']) ?>
+    </div>
 </div>
 
 <div class="row">
@@ -117,3 +119,13 @@ echo yii\jui\Tabs::widget([
 ]);
 ?>
 </div>
+
+<?php 
+yii\bootstrap\Modal::begin(['header' => '<h2>Accout closed successfully</h2>', 'id' => 'modal']);
+echo "<div id='modalContent'></div>";
+yii\bootstrap\Modal::end();
+
+$jsPath = Yii::getAlias('@web/js/common.functions.js');
+
+$this->registerJsFile($jsPath, ['depends' => \yii\web\JqueryAsset::className()]);
+?>

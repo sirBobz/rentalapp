@@ -17,3 +17,8 @@ $("#creation-method").change(function(){
            $(".autoSuiteForm").css("display", "none")
         }
 });
+
+$("#closeAccount").click(function(evt){
+    evt.preventDefault();
+    $('#modal').modal('show').find('#modalContent').load($(this).attr('href'))
+});

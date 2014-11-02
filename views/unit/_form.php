@@ -33,5 +33,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <?php ActiveForm::end(); ?>
-    <?php $this->registerJsFile('js/common.functions.js', [\yii\web\JqueryAsset::className()]); ?>
+    <?php 
+    $jsPath = Yii::getAlias('@web/js/common.functions.js');
+    $this->registerJsFile($jsPath, ['depends' => \yii\web\JqueryAsset::className()]); ?>
 </div>

@@ -21,6 +21,7 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     const STATUS_INACTIVE = 1;
     const STATUS_ACTIVE = 2;
+    const STATUS_DISABLED = 3;
     
     public $newPassword;
     public $name;
@@ -119,6 +120,11 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             return TRUE;
     }
     
+    public function disable()
+    {
+        $this->status = static::STATUS_DISABLED;
+    }
+
     public static function loginStatusDropDown()
     {
         static $dropdown;

@@ -33,6 +33,7 @@ class Rental extends \yii\db\ActiveRecord
 {
     const STATUS_RENTAL_PENDING_DEPOSIT = 1;
     const STATUS_RENTAL_ACTIVE = 2;
+    const STATUS_RENTAL_CLOSED = 3;
     
     public $unitname;
     public $propertyname;
@@ -218,6 +219,38 @@ class Rental extends \yii\db\ActiveRecord
         return $isSuccessful;
     }
     
+    public function close($login)
+    {
+        $this->rentalstatus = static::STATUS_RENTAL_CLOSED;
+        
+        $login->disable();
+        
+        //refund deposit(dr)
+        $refundableAmount = $this->depositamount - ($this->depositrentalperiodpaidfor * $this->amountperperiod);
+        if($refundableAmount > 0)
+        {
+            
+        }
+    }
+    
+    public function debitDepositOnAccountClosure($refundableAmount)
+    {
+        $this->debitAccountBalance($refundableAmount);
+        
+        $accountEntry = new AccountEntry;
+        $accountEntry->amount = $refundableAmount;
+        $accountEntry->createdbyref = \Yii::$app->user->id;
+        $accountEntry->datecreated = date('Y-m-d H:i:s');
+        $accountEntry->rentalref = $this->id;
+        $accountEntry->type = AccountEntry::ACCOUNTTYPE_DEBIT;
+        $accountEntry->save();
+
+        $depositRefund = new DepositRefund;
+        $depositRefund->accountentryref = $accountEntry->id;
+        $depositRefund->approvalstatus = DepositRefund::STATUS_PENDING_APPROVAL;
+        $depositRefund->save();
+    }
+
     public static function rentalStatusDropDown()
     {
         static $dropdown;

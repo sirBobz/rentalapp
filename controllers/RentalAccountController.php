@@ -169,4 +169,59 @@ class RentalAccountController extends \yii\web\Controller
             'pieChartData' => $pieChartData
         ]);
     }
+    
+    /**
+     * @permission closerentalaccount
+     */
+    public function actionClose($id)
+    {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
+        $rentalAccount = \app\models\Rental::findOne($id);
+        
+        //get login so that it can be disabled
+        $login = \app\models\Login::find()->where(['entityref' => $id])
+                ->one();
+        
+        $rentalAccount->close($login);
+        
+        return $this->renderAjax('close');
+    }
+    
+    /**
+     * @permission approvedepositrefund
+     */
+    public function actionDepositRefundPendingApproval()
+    {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
+        $query = \app\models\DepositRefund::find()
+                ->select(['ae.amount', 'ae.datecreated', 'l.emailaddress AS createdby', 
+                    'r.accountnumber', 'e.name'])
+                ->innerJoin('accountentry ae', 'depositrefund.accountentryref = ae.id')
+                ->innerJoin('login l', 'ae.createdbyref = l.id')
+                ->innerJoin('rental r', 'ae.rentalref = r.id')
+                ->innerJoin('entity e', 'r.tenantref = e.id')
+                ->where(['approvalstatus' => \app\models\DepositRefund::STATUS_PENDING_APPROVAL]);
+        
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => $query,
+        ]);
+        
+        return $this->render('deposit-refund-pending-approval', [
+            'dataProvider' => $dataProvider
+        ]);
+    }
 }

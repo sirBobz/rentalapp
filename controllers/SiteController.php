@@ -86,7 +86,12 @@ class SiteController extends Controller
         
         if ($model->load(Yii::$app->request->post()))
         {
-            $model->reset();
+            $result = $model->reset();
+            
+            if($result == TRUE)
+            {
+                \Yii::$app->session->setFlash('success', 'Please check your email for link to reset your password');
+            }
         }
         
         return $this->render('password-reset', [
