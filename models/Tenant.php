@@ -40,7 +40,8 @@ class Tenant extends Entity
             [['name'], 'string', 'max' => 200],
             [['phonenumber'], 'string', 'max' => 15],
             [['emailaddress'], 'string', 'max' => 45],
-            [['emailaddress'], 'unique']
+            [['emailaddress'], 'unique'],
+            [['emailaddress'], 'email']
         ];
     }
 

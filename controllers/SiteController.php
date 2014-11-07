@@ -98,6 +98,31 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
+    
+    public function actionVerifyEmail($hash, $email)
+    {
+        $result = \Yii::$app->getSecurity()->validateData($hash, $email);
+        if($result === FALSE)
+            throw new \yii\base\InvalidValueException('System was unable to validate the request');
+        
+        //update login status to active
+        $login = \app\models\Login::find()->where(['emailaddress' => $email])->one();
+        $login->activate();
+        $login->save();
+        
+        $model = new LoginForm();
+        $model->username = $email;
+        $model->password = $email;
+        
+        $model->login();
+        return $this->actionChangePassword($login->id);
+    }
+    
+    public function actionChangePassword($id)
+    {
+        print_r($id);
+        die();
+    }
 
     public function actionLogout()
     {

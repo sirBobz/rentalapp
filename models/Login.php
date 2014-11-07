@@ -120,6 +120,11 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             return TRUE;
     }
     
+    public function activate()
+    {
+        $this->status = static::STATUS_ACTIVE;
+    }
+
     public function disable()
     {
         $this->status = static::STATUS_DISABLED;
