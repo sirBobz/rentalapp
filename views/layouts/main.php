@@ -55,9 +55,16 @@ AppAsset::register($this);
                 $actionsForUser[] = $roleAction->child;
             
         }
-        //$allowable = in_array('uploadpayment', $actionsForUser);
-        //var_dump(Yii::$app->user->id);
-        //die();
+        
+        $toplevelVisible = TRUE;
+        $role = \Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
+        if($role != NULL)
+        {
+            if(key_exists('tenant', $role))
+            {
+                $toplevelVisible = FALSE;
+            }
+        }
         
             NavBar::begin([
                 'brandLabel' => 'Rental App',
@@ -71,7 +78,7 @@ AppAsset::register($this);
                 'items' => [
                     ['label' => 'Home', 'url' => ['/site/index'], 'visible' => true],
                     ['label' => 'Payments',
-                        'visible' => (Yii::$app->user->id == NULL)? false: true,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'Upload', 'url' => ['payment/upload'], 'visible' => in_array('uploadpayment', $actionsForUser)
@@ -85,7 +92,7 @@ AppAsset::register($this);
                         ]
                     ],
                     ['label' => 'Properties', 
-                        'visible' => (Yii::$app->user->id == NULL)? false: true,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'Property owners', 'url' => ['property-owner/index'], 'visible' => in_array('viewpropertyowner', $actionsForUser)
@@ -96,7 +103,7 @@ AppAsset::register($this);
                         ]
                     ],
                     ['label' => 'People',
-                        'visible' => (Yii::$app->user->id == NULL)? false: true,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'Tenants', 'url' => ['tenant/index'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
@@ -107,7 +114,7 @@ AppAsset::register($this);
                         ]
                     ],
                     ['label' => 'Reports', 
-                        'visible' => (Yii::$app->user->id == NULL)? false: true,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'Late payment accounts', 'url' => ['rental-account/late-payment-accounts'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
@@ -122,16 +129,16 @@ AppAsset::register($this);
                             [
                                 'label' => 'Property type uptake', 'url' => ['unit/uptake'], 'visible' => in_array('viewunit', $actionsForUser)
                             ],
-                            [
+                            /*[
                                 'label' => 'Concentrated locations', 'visible' => in_array('viewrentalaccount', $actionsForUser)
                             ],
                             [
                                 'label' => 'Most upcoming locations', 'visible' => in_array('viewrentalaccount', $actionsForUser)
-                            ]
+                            ]*/
                         ]
                     ],
                     ['label' => 'System',
-                        'visible' => (Yii::$app->user->id == NULL)? false: true,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'System roles', 'url' => ['rbac/roles'], 'visible' => in_array('viewrole', $actionsForUser)

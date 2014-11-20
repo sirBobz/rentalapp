@@ -30,6 +30,10 @@ class PropertySearch extends Property
     public function search($params)
     {
         $query = Property::find();
+        if (key_exists('ownerid', $params))
+        {
+            $query->andFilterWhere(['propertyownerref' => $params['ownerid']]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

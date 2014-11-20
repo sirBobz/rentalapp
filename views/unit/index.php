@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'isavailable',
                 //'type' => 'boolean',
-                'label' => 'Availability',
+                'label' => 'Available?',
                 'filter' => \app\models\Unit::availabilityDropDown(),
                 'value' => function($model, $index, $dataColumn){
                     return app\models\Unit::availabilityDropDown()[$model->isavailable];

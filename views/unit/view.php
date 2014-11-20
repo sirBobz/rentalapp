@@ -33,7 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model' => $model,
                 'attributes' => [
                     'name',
-                    'propertyref',
+                    [
+                        'label' => 'Property',
+                        'attribute' => 'propertyname'
+                    ],
                     'description',
                     'isavailable:boolean',
                 ],

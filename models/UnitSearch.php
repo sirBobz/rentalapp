@@ -33,6 +33,11 @@ class UnitSearch extends Unit
             'p.name as propertyname', 'e.name as propertyowner'])
                 ->innerJoin('property p', 'unit.propertyref = p.id')
                 ->innerJoin('entity e', 'p.propertyownerref = e.id');
+        
+        if (key_exists('propertyid', $params))
+        {
+            $query->andFilterWhere(['propertyref' => $params['propertyid']]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

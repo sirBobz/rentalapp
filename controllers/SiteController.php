@@ -50,6 +50,32 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+        //if user not logged in, navigate to login page
+        if(\Yii::$app->user->isGuest)
+        {
+            return $this->redirect(['/site/login']);
+        }
+        
+        //if user is tenant, navigate to tenant home page
+        $userId = \Yii::$app->user->id;
+        $role = \Yii::$app->authManager->getRolesByUser($userId);
+
+        if(key_exists('tenant', $role))
+        {
+            $rentalAccountId = \app\models\Login::find()
+                    ->select(['r.id'])
+                    ->where(['login.id' => $userId])
+                    ->innerJoin('rental r', 'entityref = r.tenantref')
+                    ->one();
+
+            return $this->redirect(['/rental-account/view', 'id' => $rentalAccountId]);
+        }
+        if(key_exists('admin', $role))
+        {
+            return $this->redirect(['unit/uptake']);
+        }
+        
+        //if user is admin navigate to reports page
         return $this->render('index');
     }
 
@@ -63,11 +89,26 @@ class SiteController extends Controller
         $model = new LoginForm();
         
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            //$pass = \yii\helpers\Security::generatePasswordHash($model->password);
-            //print_r($pass);
-            //die();
+            $userId = \Yii::$app->user->id;
+            $role = \Yii::$app->authManager->getRolesByUser($userId);
+            
+            if(key_exists('tenant', $role))
+            {
+                $rentalAccountId = \app\models\Login::find()
+                        ->select(['r.id'])
+                        ->where(['login.id' => $userId])
+                        ->innerJoin('rental r', 'entityref = r.tenantref')
+                        ->one();
+                        
+                return $this->redirect(['/rental-account/view', 'id' => $rentalAccountId]);
+            }
         
-            return $this->goBack();
+            if(key_exists('admin', $role))
+            {
+                return $this->redirect(['unit/uptake']);
+            }
+            
+            //return $this->goBack();
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -115,13 +156,38 @@ class SiteController extends Controller
         $model->password = $email;
         
         $model->login();
-        return $this->actionChangePassword($login->id);
+        return $this->redirect(['/site/change-password', 'id' => $login->id]);
+    }
+    
+    public function actionVerifyPasswordReset($hash, $email)
+    {
+        $result = \Yii::$app->getSecurity()->validateData($hash, $email);
+        if($result === FALSE)
+            throw new \yii\base\InvalidValueException('System was unable to validate the request');
+        
+        $login = \app\models\Login::find()->where(['emailaddress' => $email])->one();
+        
+        return $this->redirect(['/site/change-password', 'id' => $login->id]);
     }
     
     public function actionChangePassword($id)
     {
-        print_r($id);
-        die();
+        $model = new \app\models\PasswordChangeForm();
+        $model->id = $id;
+        
+        if($model->load(Yii::$app->request->post()))
+        {
+            $login = \app\models\Login::find()->where(['id' => $id])->one();
+            $login->updatePassword($model->new_password);
+            $login->save();
+            
+            Yii::$app->session->setFlash('success', 'Password changed successfully');
+            $this->goHome();
+        }
+        
+        return $this->render('change-password', [
+            'model' => $model
+        ]);
     }
 
     public function actionLogout()

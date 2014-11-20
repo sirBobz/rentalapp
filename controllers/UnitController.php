@@ -84,8 +84,15 @@ class UnitController extends Controller
         if(!$can)
             throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
         
+        $unit = Unit::find()
+                ->select(['unit.name', 'p.name as propertyname', 'unit.description', 'unit.isavailable', 
+                    'unit.propertyref', 'unit.id'])
+                ->innerJoin('property p', 'unit.propertyref = p.id')
+                ->where(['unit.id' => $id])
+                ->one();
+        
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $unit,
         ]);
     }
 

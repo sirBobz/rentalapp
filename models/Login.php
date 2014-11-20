@@ -95,7 +95,7 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 
     public function verifyPassword($password)
     {
-        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 
     public function getAuthKey() {
@@ -111,15 +111,28 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     }
     
     public function beforeValidate() {
-        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->emailaddress);
-        $this->datecreated = date('Y-m-d H:i:s');
-        $this->status = static::STATUS_INACTIVE;
-        $this->createdbyref = Yii::$app->user->identity->entityref;
+//        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->emailaddress);
+//        $this->datecreated = date('Y-m-d H:i:s');
+//        $this->status = static::STATUS_INACTIVE;
+//        $this->createdbyref = Yii::$app->user->identity->entityref;
         
         if(parent::beforeValidate())
             return TRUE;
     }
     
+    public function beforeSave($insert) {
+        if($this->isNewRecord)
+        {
+            $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->emailaddress);
+            $this->datecreated = date('Y-m-d H:i:s');
+            $this->status = static::STATUS_INACTIVE;
+            $this->createdbyref = Yii::$app->user->identity->entityref;
+        }
+        
+        if(parent::beforeSave($insert))
+            return TRUE;
+    }
+
     public function activate()
     {
         $this->status = static::STATUS_ACTIVE;
@@ -128,6 +141,11 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function disable()
     {
         $this->status = static::STATUS_DISABLED;
+    }
+    
+    public function updatePassword($newpassword)
+    {
+        $this->password = Yii::$app->getSecurity()->generatePasswordHash($newpassword);
     }
 
     public static function loginStatusDropDown()

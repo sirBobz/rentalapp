@@ -17,7 +17,7 @@ class PropertyController extends Controller
     private $rc;
     
     public function __construct($id, $module, $config = array()) {
-        $rc = new \ReflectionClass(get_class());
+        $this->rc = new \ReflectionClass(get_class());
         parent::__construct($id, $module, $config);
     }
 

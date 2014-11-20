@@ -110,6 +110,10 @@ class TenantController extends Controller
                     $tenantLogin->emailaddress = $model->emailaddress;
                     $tenantLogin->insert();
                     
+                    //assign tenant role to the tenant
+                    $role = \Yii::$app->authManager->getRole('tenant');
+                    \Yii::$app->authManager->assign($role, $tenantLogin->id);
+                    
                     Yii::$app->mailer->compose('tenant/confirmEmailAddress', 
                         [
                             'emailaddress' => $model->emailaddress,
