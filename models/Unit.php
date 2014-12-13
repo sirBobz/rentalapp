@@ -64,6 +64,12 @@ class Unit extends \yii\db\ActiveRecord
         
         $this->isavailable = FALSE;
     }
+    
+    public function unAssign()
+    {
+        if($this->isavailable == FALSE)
+            $this->isavailable = TRUE;
+    }
 
     /**
      * @return \yii\db\ActiveQuery

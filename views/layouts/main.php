@@ -67,7 +67,7 @@ AppAsset::register($this);
         }
         
             NavBar::begin([
-                'brandLabel' => 'Rental App',
+                'brandLabel' => 'COBS Rent Collection',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-inverse navbar-fixed-top',
@@ -82,10 +82,10 @@ AppAsset::register($this);
                         'items' => [
                             [
                                 'label' => 'Upload', 'url' => ['payment/upload'], 'visible' => in_array('uploadpayment', $actionsForUser)
-                            ],
+                            ]/*,
                             [
                                 'label' => 'Simulate IPN form', 'url' => ['payment/simulate'], 'visible' => in_array('simulatepayment', $actionsForUser)
-                            ],
+                            ]*/,
                             [
                                 'label' => 'Pending actioning', 'url' => ['payment/listpendingassignment'], 'visible' => in_array('paymentforactioning', $actionsForUser)
                             ]
@@ -99,6 +99,9 @@ AppAsset::register($this);
                             ],
                             [
                                 'label' => 'Rental Accounts', 'url' => ['rental-account/index'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
+                            ],
+                            [
+                                'label' => 'Deposit refunds', 'url' => ['rental-account/deposit-refund-pending-approval'], 'visible' => in_array('paymentforactioning', $actionsForUser)
                             ]
                         ]
                     ],
@@ -179,7 +182,7 @@ AppAsset::register($this);
 
     <footer class="footer">
         <div class="container">
-            <p class="pull-left">&copy; Rental App <?= date('Y') ?></p>
+            <p class="pull-left">&copy; COBS Rent Collection <?= date('Y') ?></p>
             <p class="pull-right"><?= Yii::powered() ?></p>
         </div>
     </footer>

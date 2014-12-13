@@ -98,6 +98,41 @@ class RentalAccountController extends \yii\web\Controller
     }
 
     /**
+     * @permission listtenantrentalaccounts
+     */
+    public function actionAccountsForTenant($id)
+    {
+        $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();
+        $perm = preg_replace('/\W/', "", $perm);
+        $perm = substr($perm, 10);
+        
+        $can = Yii::$app->user->can($perm);
+        if(!$can)
+            throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+        
+        $query = \app\models\Rental::find()
+                ->select(['rental.id', 'rental.accountnumber', 'rental.datecreated', 'rental.rentalperiod', 
+                    'rental.amountperperiod', 'rental.depositamount', 'rental.currentbalance', 
+                    'rental.lastpaymentdate', 'rental.latepaymentcharge', 'rental.billingstartdate', 'rental.rentalstatus',
+                    'u.name as unitname',
+                    'p.name as propertyname', 'p.code as propertycode',
+                    'e.name as tenantname',
+                    'cre.expirydate as expirydate'])
+                ->where(['rental.tenantref' => $id])
+                ->innerJoin('unit u', 'unitref = u.id')
+                ->innerJoin('property p', 'u.propertyref = p.id')
+                ->innerJoin('entity e', 'tenantref = e.id')
+                ->leftJoin('currentrentalexpiry cre', 'rental.id = cre.rentalid');
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => $query,
+        ]);
+        
+        return $this->render('accounts-for-tenant', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    /**
      * @permission viewrentaltxhistory
      */
     public function actionTransactionhistory($id)
@@ -182,16 +217,25 @@ class RentalAccountController extends \yii\web\Controller
         $can = Yii::$app->user->can($perm);
         if(!$can)
             throw new \yii\web\NotFoundHttpException('You do no have permission to access the requested page.');
+                
+        $rentalAccount = \app\models\Rental::find()
+                ->where(['id' => $id])
+                ->one();
         
-        $rentalAccount = \app\models\Rental::findOne($id);
+        if($rentalAccount->rentalstatus != \app\models\Rental::STATUS_RENTAL_ACTIVE)
+            throw new \yii\web\NotFoundHttpException('You cannot close an account that is not active!');
+        
         
         //get login so that it can be disabled
         $login = \app\models\Login::find()->where(['entityref' => $id])
                 ->one();
         
-        $rentalAccount->close($login);
+        $refundedAmount = $rentalAccount->close($login);
+        $rentalAccount->save();
         
-        return $this->renderAjax('close');
+        return $this->renderAjax('close', [
+            'amountRefunded' => $refundedAmount
+        ]);
     }
     
     /**
@@ -214,7 +258,7 @@ class RentalAccountController extends \yii\web\Controller
                 ->innerJoin('login l', 'ae.createdbyref = l.id')
                 ->innerJoin('rental r', 'ae.rentalref = r.id')
                 ->innerJoin('entity e', 'r.tenantref = e.id')
-                ->where(['approvalstatus' => \app\models\DepositRefund::STATUS_PENDING_APPROVAL]);
+                ->where(['depositrefund.approvalstatus' => \app\models\DepositRefund::STATUS_PENDING_APPROVAL]);
         
         $dataProvider = new \yii\data\ActiveDataProvider([
             'query' => $query,

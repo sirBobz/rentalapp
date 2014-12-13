@@ -29,7 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 </div>
 <div class="row">
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => ['style' => 'width:400px']
+    ]); ?>
     <div class="form-group">
         <label class="control-label" for="comboTenant">Tenant</label>
         <?= AutoComplete::widget([
@@ -54,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="form-group">
         <label class="control-label" for="rentalaccount">Rental</label>
         <?= \kartik\helpers\Html::dropDownList('rentalaccount', null, ['Prompt' => 'Select rental a/c'], 
-    ['id' => 'rentalaccount']) ?>
+    ['id' => 'rentalaccount', 'class' => 'form-control']) ?>
     </div>
     <div class="form-group">
         <?= Html::submitButton('Assign', ['class' => 'btn btn-success']) ?>

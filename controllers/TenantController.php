@@ -108,18 +108,18 @@ class TenantController extends Controller
                     $tenantLogin = new \app\models\Login;
                     $tenantLogin->entityref = $model->id;
                     $tenantLogin->emailaddress = $model->emailaddress;
-                    $tenantLogin->insert();
+                    $tenantLogin->insert(FALSE);
                     
                     //assign tenant role to the tenant
                     $role = \Yii::$app->authManager->getRole('tenant');
                     \Yii::$app->authManager->assign($role, $tenantLogin->id);
                     
-                    Yii::$app->mailer->compose('tenant/confirmEmailAddress', 
+                    Yii::$app->mailer->compose('entity/confirmEmailAddress', 
                         [
                             'emailaddress' => $model->emailaddress,
                             'hash' => \Yii::$app->getSecurity()->hashData($tenantLogin->id, $model->emailaddress)
                         ])
-                    ->setTo("dlukoba@yahoo.com")
+                    ->setTo($model->emailaddress)
                     ->setFrom('daniel@lukoba.com')
                     ->setSubject("Please verify your email '$tenantLogin->emailaddress'")
                     ->send();

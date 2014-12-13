@@ -72,8 +72,9 @@ class PaymentController extends \yii\web\Controller
         {
             $rental = \app\models\Rental::findOne($post['rentalaccount']);
             $rental->creditOnManualPaymentAssignment($payment->amount, $payment->id);
+            $rental->save();
             
-            //redirect to success message
+            return $this->redirect(['/rental-account/view', 'id' => $post['rentalaccount']]);
         }
         
         return $this->render('assign', [
@@ -220,9 +221,11 @@ class PaymentController extends \yii\web\Controller
                     $payment->receiptnumber = $data[0];
                     
                     $res = $payment->insert();
-                    
-                    $payment->on(\app\models\Payment::EVENT_PAYMENT_COMPOSED, [$obj, 'processEvent']);
-                    $payment->notifyUponCreation();
+                    if($res)
+                    {
+                        $payment->on(\app\models\Payment::EVENT_PAYMENT_COMPOSED, [$obj, 'processEvent']);
+                        $payment->notifyUponCreation();
+                    }
                 }
             }
             fclose($handle);

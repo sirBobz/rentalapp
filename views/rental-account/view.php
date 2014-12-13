@@ -12,14 +12,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="row">
     <div class="col-sm-2">
+        Account status
+    </div>
+    <div class="col-sm-2">
+        <?= \app\models\Rental::rentalStatusDropDown()[$model->rentalstatus] ?>
+    </div>
+    <div class="col-sm-1"></div>
+    <div class="col-sm-2">
         Current a/c balance
     </div>
     <div class="col-sm-2">
         <?= $model->currentbalance ?>
     </div>
-    <div class="col-sm-offset-10">
-        <?= Html::a('Close Account', ['rental-account/close', 'id' => $model->id], ['id' => 'closeAccount']) ?>
-    </div>
+    <?php
+    if($model->rentalstatus == \app\models\Rental::STATUS_RENTAL_ACTIVE)
+    {
+        ?>
+        <div class="col-sm-offset-10">
+            <?= Html::a('Close Account', ['rental-account/close', 'id' => $model->id], ['id' => 'closeAccount']) ?>
+        </div>
+    <?php
+    }
+    ?>
 </div>
 
 <div class="row">
@@ -108,13 +122,13 @@ echo yii\jui\Tabs::widget([
             'label' => 'Transaction History',
             'headerOptions' => ['style' => 'font-weight:bold;'],
             'url' => ['rental-account/transactionhistory', 'id' => $model->id]
-        ],
+        ]/*,
         [
             'label' => 'Sms History',
             'content' => 'content two',
             'headerOptions' => ['style' => 'font-weight:bold'],
             
-        ]
+        ]*/
     ]
 ]);
 ?>

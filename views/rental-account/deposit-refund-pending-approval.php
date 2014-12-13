@@ -2,7 +2,7 @@
 use yii\grid\GridView;
 use yii\helpers\Html;
 
-$this->title = 'Deposit refunds pending approval';
+$this->title = 'Deposit refunds';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="page-header">
@@ -29,12 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'accountnumber'
             ],
             [
+                'label' => 'Tenant',
                 'attribute' => 'name'
             ],
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}'  
-            ],
+//            [
+//                'class' => 'yii\grid\ActionColumn',
+//                'template' => '{view}'  
+//            ],
             
         ],
     ]); ?>

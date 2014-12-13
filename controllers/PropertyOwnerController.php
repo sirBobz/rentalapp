@@ -106,6 +106,27 @@ class PropertyOwnerController extends Controller
                 $model->data->entityref = $model->id;
                 if($model->data->save())
                 {
+                    //create a login for the propertyowner
+                    $propertyOwnerLogin = new \app\models\Login;
+                    $propertyOwnerLogin->entityref = $model->id;
+                    $propertyOwnerLogin->emailaddress = $model->emailaddress;
+                    $propertyOwnerLogin->insert(FALSE);
+                                        
+                    //assign tenant role to the tenant
+                    $role = \Yii::$app->authManager->getRole('propertyowner');
+                    \Yii::$app->authManager->assign($role, $propertyOwnerLogin->id);
+                    
+                    Yii::$app->mailer->compose('entity/confirmEmailAddress', 
+                        [
+                            'emailaddress' => $model->emailaddress,
+                            'hash' => \Yii::$app->getSecurity()->
+                                hashData($propertyOwnerLogin->id, $propertyOwnerLogin->emailaddress)
+                        ])
+                    ->setTo($model->emailaddress)
+                    ->setFrom('daniel@lukoba.com')
+                    ->setSubject("Please verify your email '$propertyOwnerLogin->emailaddress'")
+                    ->send();
+                    
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }

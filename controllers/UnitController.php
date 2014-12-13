@@ -231,8 +231,14 @@ class UnitController extends Controller
         $tenants = \app\models\Tenant::find()->where(['entitytype' => 'Tenant'])->
         select(['name as value', 'id'])->asArray()->all();
         
+        $posted = \Yii::$app->request->post();
+        $model->load($posted);
+        
         if ($model->load(Yii::$app->request->post()))
         {
+            $parsedDate = date_parse($model->billingstartdate);
+            $model->billingstartdate = $parsedDate['year']. "-". $parsedDate['month']. "-". $parsedDate['day'];
+            
             $isDataSaved = FALSE;
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -247,7 +253,7 @@ class UnitController extends Controller
             }
             
             if ($isDataSaved)
-                return $this->redirect(['rental', 'id' => $model->id]);
+                return $this->redirect(['/rental-account/view', 'id' => $model->id]);
         }
         
         return $this->render('assign', [

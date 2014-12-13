@@ -55,7 +55,7 @@ class Rental extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['unitref', 'datecreated', 'createdbyref', 'rentalperiod', 'amountperperiod', 'tenantref', 'depositamount', 'currentbalance', 'depositrentalperiodpaidfor', 'lastpaymentdate', 'accountnumber'], 'required'],
+            [['unitref', 'datecreated', 'createdbyref', 'rentalperiod', 'amountperperiod', 'tenantref', 'depositamount', 'currentbalance', 'depositrentalperiodpaidfor', 'lastpaymentdate', 'accountnumber', 'billingstartdate'], 'required'],
             [['unitref', 'createdbyref', 'destroyedbyref', 'rentalperiod', 'tenantref', 'depositrentalperiodpaidfor', 'lastpaymentdate', 'rentalstatus'], 'integer'],
             [['datecreated', 'datedestroyed'], 'safe'],
             [['amountperperiod', 'depositamount', 'currentbalance', 'latepaymentcharge'], 'number']
@@ -119,7 +119,11 @@ class Rental extends \yii\db\ActiveRecord
                 $this->datecreated = date('Y-m-d H:i:s');
                 $this->createdbyref = Yii::$app->user->id;
                 $this->currentbalance = 0;
-                $this->rentalstatus = self::STATUS_RENTAL_PENDING_DEPOSIT;
+                
+                if($this->depositamount > 0)
+                    $this->rentalstatus = self::STATUS_RENTAL_PENDING_DEPOSIT;
+                else
+                    $this->rentalstatus = self::STATUS_RENTAL_ACTIVE;
             }
             return TRUE;
         }
@@ -142,6 +146,23 @@ class Rental extends \yii\db\ActiveRecord
             $rentalDeposit = new Rentaldeposit;
             $rentalDeposit->accountentryref = $accountEntry->id;
             $rentalDeposit->save();
+        }
+        if($this->depositamount == 0)
+        {
+            //create rentalperioddebit
+            $accountEntry = new AccountEntry;
+            $accountEntry->amount = $this->amountperperiod;
+            $accountEntry->createdbyref = \Yii::$app->user->id;
+            $accountEntry->datecreated = date('Y-m-d H:i:s');
+            $accountEntry->rentalref = $this->id;
+            $accountEntry->type = AccountEntry::ACCOUNTTYPE_DEBIT;
+            $accountEntry->save();
+            
+            $rentalPeriodDebit = new Rentalperioddebit;
+            $rentalPeriodDebit->accountentryref = $accountEntry->id;
+            $rentalPeriodDebit->datefrom = $this->billingstartdate;
+            $rentalPeriodDebit->dateto = date('Y-m-t', strtotime($this->billingstartdate));
+            $rentalPeriodDebit->save();
         }
     }
     
@@ -223,14 +244,27 @@ class Rental extends \yii\db\ActiveRecord
     {
         $this->rentalstatus = static::STATUS_RENTAL_CLOSED;
         
-        $login->disable();
+        $unit = $this->unitref0;
+        $unit->unAssign();
+        $unit->save();
+        
+        $accounts = \app\models\Rental::find()
+                ->where(['tenantref' => $this->tenantref])
+                ->all();
+        
+        if(count($accounts) == 1)
+        {
+            $login->disable();
+            $login->save();
+        }
         
         //refund deposit(dr)
         $refundableAmount = $this->depositamount - ($this->depositrentalperiodpaidfor * $this->amountperperiod);
         if($refundableAmount > 0)
         {
-            
+            $this->debitDepositOnAccountClosure($refundableAmount);
         }
+        return $refundableAmount;
     }
     
     public function debitDepositOnAccountClosure($refundableAmount)

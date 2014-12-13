@@ -5,31 +5,23 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "depositrefund".
+ * This is the model class for table "rentalperioddebit".
  *
  * @property string $id
  * @property string $accountentryref
- * @property integer $approvalstatus
+ * @property string $datefrom
+ * @property string $dateto
  *
  * @property Accountentry $accountentryref0
  */
-class DepositRefund extends \yii\db\ActiveRecord
+class Rentalperioddebit extends \yii\db\ActiveRecord
 {
-    const STATUS_PENDING_APPROVAL = 1;
-    const STATUS_GRANTED = 2;
-    const STATUS_DECLINED = 3;
-    
-    public $amount;
-    public $datecreated;
-    public $createdby;
-    public $accountnumber;
-    public $name;
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'depositrefund';
+        return 'rentalperioddebit';
     }
 
     /**
@@ -38,8 +30,9 @@ class DepositRefund extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['accountentryref', 'approvalstatus'], 'required'],
-            [['accountentryref', 'approvalstatus'], 'integer']
+            [['accountentryref', 'datefrom', 'dateto'], 'required'],
+            [['accountentryref'], 'integer'],
+            [['datefrom', 'dateto'], 'safe']
         ];
     }
 
@@ -51,6 +44,8 @@ class DepositRefund extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'accountentryref' => 'Accountentryref',
+            'datefrom' => 'Datefrom',
+            'dateto' => 'Dateto',
         ];
     }
 

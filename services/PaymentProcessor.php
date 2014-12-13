@@ -24,7 +24,7 @@ class PaymentProcessor implements IProcessPayment
             
             if ($exactMatch['rentalstatus'] == \app\models\Rental::STATUS_RENTAL_PENDING_DEPOSIT)
             {
-                if ($rental->currentbalance >= 0)
+                if ($rental->currentbalance >= $rental->depositamount)
                 {
                     //update rentalstatus
                     $rental->rentalstatus = \app\models\Rental::STATUS_RENTAL_ACTIVE;
@@ -36,10 +36,49 @@ class PaymentProcessor implements IProcessPayment
                     
                     $rentalExpiry = new \app\models\Currentrentalexpiry;
                     $rentalExpiry->rentalid = $exactMatch['id'];
-                    $rentalExpiry->expirydate =  $expiryDate;//add depositmonthspaidfor + billingstart
+                    $rentalExpiry->expirydate =  date("Y-m-t", strtotime("-1 month", strtotime($expiryDate)));
                     $rentalExpiry->save();
                 }
             }
+            else if ($exactMatch['rentalstatus'] == \app\models\Rental::STATUS_RENTAL_ACTIVE)
+            {
+                if($rental->currentbalance >= $rental->amountperperiod)
+                {
+                    //if currentexpiry does not exist, create one,
+                    //else update it
+                    $currentExpiry = \app\models\Currentrentalexpiry::find()
+                            ->where(['rentalid' => $exactMatch['id']])
+                            ->one();
+                    
+                    //unmatched (zero deposit rental account)
+                    if($currentExpiry == FALSE)
+                    {
+                        $firstDayOfMonth = date('Y-m-01', strtotime($exactMatch['billingstartdate']));
+                        $offset = floor($rental->currentbalance/$rental->amountperperiod);
+                        $expiryDate = date('Y-m-d', strtotime("+$offset months", strtotime($firstDayOfMonth)));
+
+                        $rentalExpiry = new \app\models\Currentrentalexpiry;
+                        $rentalExpiry->rentalid = $exactMatch['id'];
+                        $rentalExpiry->expirydate =  $rentalExpiry->expirydate =  date("Y-m-t", strtotime("-1 month", strtotime($expiryDate)));
+                        $rentalExpiry->save();
+                    }
+                    //try updating it
+                    else {
+                        $additions = floor($rental->currentbalance/$rental->amountperperiod);
+                        
+                        if($additions > 0)
+                        {
+                            $additions *= $rental->rentalperiod;
+                            $lastDayOfCurrentExpiryMonth = date('Y-m-t', strtotime($currentExpiry['expirydate']));
+                            $newExpiryDate = date('Y-m-d', strtotime("+$additions months", strtotime($lastDayOfCurrentExpiryMonth)));
+                            
+                            $currentExpiry->expirydate = $newExpiryDate;
+                            $currentExpiry->save();
+                        }
+                    }
+                }
+            }
+            
             $rental->save();
         }
         //multiple matches, list under payment exceptions

@@ -62,13 +62,17 @@ class SiteController extends Controller
 
         if(key_exists('tenant', $role))
         {
-            $rentalAccountId = \app\models\Login::find()
-                    ->select(['r.id'])
+            $rentalAccounts = \app\models\Login::find()
+                    ->select(['r.id', 'r.tenantref'])
                     ->where(['login.id' => $userId])
                     ->innerJoin('rental r', 'entityref = r.tenantref')
-                    ->one();
+                    ->all();
 
-            return $this->redirect(['/rental-account/view', 'id' => $rentalAccountId]);
+            //tenant has many accounts
+            if(count($rentalAccounts) > 1)
+                return $this->redirect(['/rental-account/accounts-for-tenant', 'id' => $rentalAccounts[0]['tenantref']]);
+            if(count($rentalAccounts) == 1)
+                return $this->redirect(['/rental-account/view', 'id' => $rentalAccounts[0]['id']]);
         }
         if(key_exists('admin', $role))
         {
@@ -94,13 +98,17 @@ class SiteController extends Controller
             
             if(key_exists('tenant', $role))
             {
-                $rentalAccountId = \app\models\Login::find()
-                        ->select(['r.id'])
+                $rentalAccounts = \app\models\Login::find()
+                        ->select(['r.id', 'r.tenantref'])
                         ->where(['login.id' => $userId])
                         ->innerJoin('rental r', 'entityref = r.tenantref')
-                        ->one();
-                        
-                return $this->redirect(['/rental-account/view', 'id' => $rentalAccountId]);
+                        ->all();
+                
+                //tenant has many accounts
+                if(count($rentalAccounts) > 1)
+                    return $this->redirect(['/rental-account/accounts-for-tenant', 'id' => $rentalAccounts[0]['tenantref']]);
+                if(count($rentalAccounts) == 1)
+                    return $this->redirect(['/rental-account/view', 'id' => $rentalAccounts[0]['id']]);
             }
         
             if(key_exists('admin', $role))

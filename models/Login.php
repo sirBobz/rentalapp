@@ -27,6 +27,7 @@ class Login extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public $name;
     public $entitytype;
     public $item_name;
+    public $tenantref;
     /**
      * @inheritdoc
      */

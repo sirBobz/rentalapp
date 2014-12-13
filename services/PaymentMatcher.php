@@ -12,7 +12,10 @@ class PaymentMatcher implements IMatchPayment
             'rental.rentalstatus', 'rental.depositamount', 'rental.depositrentalperiodpaidfor', 
             'rental.billingstartdate'])->
         innerJoin('entity e', 'rental.tenantref = e.id')->
-                where(['datedestroyed' => null]);
+                where([
+                    'rental.datedestroyed' => null, 
+                    'rental.rentalstatus' => [\app\models\Rental::STATUS_RENTAL_PENDING_DEPOSIT, 
+                        \app\models\Rental::STATUS_RENTAL_ACTIVE]]);
                 
         if(!empty($accountNumber))
         {
