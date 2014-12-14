@@ -205,6 +205,25 @@ class RentalAccountController extends \yii\web\Controller
         ]);
     }
     
+    public function actionLatePaymentAccountsPdf()
+    {
+        $data = \app\models\Latepaymentrentallog::find()->select(['year', 'month', 'amountcharged', 
+            'latepaymentrentallog.datecreated', 'e.name as tenantname'])
+                ->innerJoin('rental r', 'rentalref = r.id')
+                ->innerJoin('entity e', 'r.tenantref = e.id')
+                ->where([
+                    'year' => date('Y'),
+                    'month' => (date('m') < 10) ? substr(date('m'), 1) : date('m')
+                    ])->all();
+        $content = $this->renderPartial('late-payment-accounts-pdf', ['data' => $data]);
+        
+        $pdf = \Yii::$app->pdf;
+        $mpdf = $pdf->api;
+        $mpdf->WriteHtml($content);
+        echo $mpdf->Output('filename', 'D');
+        
+    }
+    
     /**
      * @permission closerentalaccount
      */

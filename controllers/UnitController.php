@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use kartik\mpdf\Pdf;
 use Yii;
 use app\models\UnitForm;
 use app\models\Unit;
@@ -309,6 +310,23 @@ class UnitController extends Controller
         ]);
     }
     
+    public function actionUnoccupiedPdf()
+    {
+        $data = Unit::find()
+                ->select(['unit.name', 'p.name as propertyname', 'e.name as propertyowner'])
+                ->innerJoin('property p', 'unit.propertyref = p.id')
+                ->innerJoin('entity e', 'p.propertyownerref = e.id')
+                ->where(['isavailable' => 1])
+                ->all();
+        $content = $this->renderPartial('unoccupied-pdf', ['data' => $data]);
+        
+        $pdf = \Yii::$app->pdf;
+        $mpdf = $pdf->api;
+        $mpdf->WriteHtml($content);
+        echo $mpdf->Output('filename', 'D');
+        
+    }
+
     public function actionUptake()
     {
         $perm = $this->rc->getMethod($this->action->actionMethod)->getDocComment();

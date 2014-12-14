@@ -1,4 +1,5 @@
 <?php
+use kartik\mpdf\Pdf;
 
 $params = require(__DIR__ . '/params.php');
 
@@ -57,6 +58,13 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
+        'pdf' => [
+            'class' => Pdf::className(),
+            'format' => Pdf::FORMAT_A4,
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'destination' => Pdf::DEST_DOWNLOAD,
+            'mode' => Pdf::MODE_UTF8
+        ]
     ],
     'params' => $params,
 ];

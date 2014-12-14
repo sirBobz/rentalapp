@@ -19,7 +19,15 @@ $this->title = 'List of unoccupied units';
         <h1><?= $this->title; ?></h1>
     </div>
     
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php 
+    echo Html::a('<i class="fa glyphicon glyphicon-hand-up"></i> Export to pdf', 
+    ['/unit/unoccupied-pdf'], 
+    [
+        'class' => 'btn btn-danger',
+        'target' => '_blank',
+        'data-toggle' => 'tooltip'
+    ]);
+// echo $this->render('_search', ['model' => $searchModel]); ?>
 <?php yii\widgets\Pjax::begin(); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

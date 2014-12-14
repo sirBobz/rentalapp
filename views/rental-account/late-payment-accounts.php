@@ -44,7 +44,15 @@ echo Highcharts::widget([
     ]
 ]);
 ?>
-<?php yii\widgets\Pjax::begin(); ?>
+<?php 
+echo yii\helpers\Html::a('<i class="fa glyphicon glyphicon-hand-up"></i> Export to pdf', 
+    ['/rental-account/late-payment-accounts-pdf'], 
+    [
+        'class' => 'btn btn-danger',
+        'target' => '_blank',
+        'data-toggle' => 'tooltip'
+    ]);
+yii\widgets\Pjax::begin(); ?>
 <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
