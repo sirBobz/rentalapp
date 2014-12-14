@@ -78,7 +78,7 @@ AppAsset::register($this);
                 'items' => [
                     ['label' => 'Home', 'url' => ['/site/index'], 'visible' => true],
                     ['label' => 'Payments',
-                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible && in_array('uploadpayment', $actionsForUser))? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'Upload', 'url' => ['payment/upload'], 'visible' => in_array('uploadpayment', $actionsForUser)
@@ -95,7 +95,7 @@ AppAsset::register($this);
                         'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
                         'items' => [
                             [
-                                'label' => 'Property owners', 'url' => ['property-owner/index'], 'visible' => in_array('viewpropertyowner', $actionsForUser)
+                                'label' => 'Property owners', 'url' => ['property-owner/index'], 'visible' => in_array('listpropertyowners', $actionsForUser)
                             ],
                             [
                                 'label' => 'Rental Accounts', 'url' => ['rental-account/index'], 'visible' => in_array('viewrentalaccount', $actionsForUser)
@@ -141,7 +141,7 @@ AppAsset::register($this);
                         ]
                     ],
                     ['label' => 'System',
-                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible)? TRUE: FALSE,
+                        'visible' => (Yii::$app->user->id != NULL && $toplevelVisible && in_array('viewrole', $actionsForUser))? TRUE: FALSE,
                         'items' => [
                             [
                                 'label' => 'System roles', 'url' => ['rbac/roles'], 'visible' => in_array('viewrole', $actionsForUser)

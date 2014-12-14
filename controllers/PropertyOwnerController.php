@@ -43,7 +43,7 @@ class PropertyOwnerController extends Controller
     }
 
     /**
-    * @permission viewpropertyowner
+    * @permission listpropertyowners
     */
     public function actionIndex()
     {

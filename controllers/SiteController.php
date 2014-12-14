@@ -78,6 +78,12 @@ class SiteController extends Controller
         {
             return $this->redirect(['unit/uptake']);
         }
+        if(key_exists('propertyowner', $role))
+        {
+            $entityId = \Yii::$app->user->identity->entityref;
+
+            return $this->redirect(['/property/index', 'ownerid' => $entityId]);
+        }
         
         //if user is admin navigate to reports page
         return $this->render('index');
@@ -116,6 +122,12 @@ class SiteController extends Controller
                 return $this->redirect(['unit/uptake']);
             }
             
+            if(key_exists('propertyowner', $role))
+            {
+                $entityId = \Yii::$app->user->identity->entityref;
+                
+                return $this->redirect(['/property/index', 'ownerid' => $entityId]);
+            }
             //return $this->goBack();
         } else {
             return $this->render('login', [
