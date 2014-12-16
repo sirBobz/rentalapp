@@ -24,7 +24,8 @@ class PaymentProcessor implements IProcessPayment
             
             if ($exactMatch['rentalstatus'] == \app\models\Rental::STATUS_RENTAL_PENDING_DEPOSIT)
             {
-                if ($rental->currentbalance >= $rental->depositamount)
+                //if ($rental->currentbalance >= $rental->depositamount)
+                if ($rental->currentbalance >= 0)
                 {
                     //update rentalstatus
                     $rental->rentalstatus = \app\models\Rental::STATUS_RENTAL_ACTIVE;

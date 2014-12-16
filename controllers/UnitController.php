@@ -227,7 +227,7 @@ class UnitController extends Controller
         $model->latepaymentcharge = $unit->property->latepaymentcharge;
         $model->rentalperiod = $unit->property->rentalperiod;
         $model->unitref = $unitid;
-        $model->accountnumber = $unit->property->code . "-" . $unitid;
+        $model->accountnumber = "UNIT-01"; //$unit->property->code . "-" . $unitid;
                 
         $tenants = \app\models\Tenant::find()->where(['entitytype' => 'Tenant'])->
         select(['name as value', 'id'])->asArray()->all();
@@ -247,6 +247,8 @@ class UnitController extends Controller
                 $unit->assign();
                 $unit->save();
                 $model->debitDepositOnRentalCreation();
+                $model->accountnumber = $unit->property->code . "-" . $model->id;
+                $model->save();
                 $transaction->commit();
             } catch (yii\base\Exception $e)
             {

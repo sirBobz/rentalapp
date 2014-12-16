@@ -35,7 +35,7 @@ foreach($uptakePerType as $item)
         ],
         'options' => [
             'title' => [
-                'text' => 'Uptake per genre',
+                'text' => 'Grouping of units uptake per genre',
             ],
 
             'series' => [
@@ -63,7 +63,7 @@ foreach($uptakePerType as $item)
         ],
         'options' => [
             'title' => [
-                'text' => 'Uptake per type',
+                'text' => 'Grouping of units uptake per type',
             ],
 
             'series' => [

@@ -54,7 +54,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= \yii\jui\DatePicker::widget(['model' => $model,
         'attribute' => 'billingstartdate',
         'clientOptions' => [
-            'dateFormat' => 'dd-mm-yy'
+            'dateFormat' => 'dd-mm-yy',
+            'minDate' => -15
         ]]) ?>
     </div>
     <div class="form-group">
